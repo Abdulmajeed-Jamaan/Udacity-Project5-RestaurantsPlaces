@@ -1,6 +1,6 @@
 let restaurants,
   neighborhoods,
-  cuisines, tabIndex = 4
+  cuisines, tabIndex = 3
 var newMap
 var markers = []
 
@@ -113,7 +113,7 @@ updateRestaurants = () => {
 
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
-  tabIndex = 4
+  tabIndex = 3
 
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
@@ -166,7 +166,7 @@ createRestaurantHTML = (restaurant) => {
   image.title = restaurant.name + ' Image';
   article.append(image);
 
-  const name = document.createElement('h1');
+  const name = document.createElement('h3');
   name.innerHTML = restaurant.name;
   article.append(name);
 
