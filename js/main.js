@@ -1,6 +1,6 @@
 let restaurants,
   neighborhoods,
-  cuisines
+  cuisines, tabIndex = 4
 var newMap
 var markers = []
 
@@ -73,12 +73,12 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
  */
 initMap = () => {
   self.newMap = L.map('map', {
-        center: [40.722216, -73.987501],
-        zoom: 12,
-        scrollWheelZoom: false
-      });
+    center: [40.722216, -73.987501],
+    zoom: 12,
+    scrollWheelZoom: false
+  });
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
-    mapboxToken: '<your MAPBOX API KEY HERE>',
+    mapboxToken: 'pk.eyJ1IjoiYWJkdWxtYWplZWQtdWRhY2l0eSIsImEiOiJjazI0b2p1MzYxY2NlM2JueW0yc3U0dTU0In0.qTbWVS83AfgrgJ58gTOkxQ',
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
       '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -113,6 +113,7 @@ updateRestaurants = () => {
 
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
+  tabIndex = 4
 
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
@@ -157,28 +158,33 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-
+  const article = document.createElement('article')
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  li.append(image);
+  image.alt = restaurant.name + ' Image';
+  image.title = restaurant.name + ' Image';
+  article.append(image);
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
-  li.append(name);
+  article.append(name);
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
-  li.append(neighborhood);
+  article.append(neighborhood);
 
   const address = document.createElement('p');
   address.innerHTML = restaurant.address;
-  li.append(address);
+  article.append(address);
 
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
+  more.tabIndex = tabIndex++;
+  article.append(more)
+
+  li.appendChild(article)
 
   return li
 }
@@ -197,7 +203,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 
-} 
+}
 /* addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
@@ -209,3 +215,15 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   });
 } */
 
+registerServiceWorker = () => {
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.register('/sw.js').then(function (reg) {
+      console.log('Service Worker Registered Successfuly !! Scope is = ' + reg.scope);
+    }).catch(function (err) {
+      console.log('Service Worker Not Registered !! ' + err);
+    });
+  }
+}
+
+
+registerServiceWorker();
